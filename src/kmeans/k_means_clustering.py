@@ -17,16 +17,11 @@ def get_distances(sub_data, centroids, cluster_K):
         dists[:,n]=distance_calculation(centroids,sub_data[:,n]);
     return dists
 
-def kmeans(data_x,cluster_K,labels):
+def kmeans(data_x,cluster_K,labels, centroids):
     data_size=data_x.shape
-    centroids=numpy.zeros((data_size[0],cluster_K));
     cores=mp.cpu_count();
     step=data_size[1]/cores+1;
     job_server=pp.Server(ncpus=cores);
-
-    for n in range(0,cluster_K):
-        for m in range(0,data_size[0]):
-            centroids[m,n]=data_x[m,numpy.random.randint(0,data_size[1])];
     
     convergence_diff=scipy.linalg.norm(centroids);
     new_centroids=numpy.zeros(centroids.shape);
@@ -59,4 +54,8 @@ def kmeans(data_x,cluster_K,labels):
 if __name__=='__main__':
     data_set=numpy.random.random_sample([128,10000])
     labels=[numpy.zeros((1,10000))]
-    kmeans(data_set, 2, labels)
+    centroids=numpy.zeros((128,2));
+    for n in range(0,2):
+        for m in range(0,128):
+            centroids[m,n]=data_set[m,numpy.random.randint(0,10000)];
+    kmeans(data_set, 2, labels, centroids)
